@@ -14,7 +14,6 @@ dependencies {
     implementation 'org.apache.kafka:kafka-clients:3.6.1'
     implementation 'org.slf4j:slf4j-simple:1.7.32'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.json:json:20240205'
 }
 
 // Define the version of Java to use
