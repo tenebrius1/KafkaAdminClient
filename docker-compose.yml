@@ -1,6 +1,0 @@
-services:
-  kafka-exporter:
-    image: danielqsj/kafka-exporter 
-    command: ["--kafka.server=172.25.76.158:9092"]
-    ports:
-      - 9308:9308 
