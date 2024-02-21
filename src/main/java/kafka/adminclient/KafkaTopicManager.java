@@ -17,6 +17,33 @@ import kafka.adminclient.KafkaAdminClientUtils;
 public class KafkaTopicManager {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    public static JsonNode describeTopic(AdminClient adminClient, String topicName) {
+        try {
+            DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
+            TopicDescription topicDescription = result.values().get(topicName).get();
+        } catch (ExecutionException | InterruptedException e) {
+            
+        }
+    }
+
+    public static JsonNode describeAllTopics(AdminClient adminClient) {
+        try {
+            // List topics
+            ListTopicsResult listTopicsResult = adminClient.listTopics();
+            Collection<TopicListing> topics = listTopicsResult.listings().get();
+
+            // Describe topics to get metadata
+            DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(topics.stream().map(TopicListing::name).toList());
+            Map<String, TopicDescription> topicDescriptions = describeTopicsResult.all().get(); 
+            
+            return KafkaAdminClientUtils.formatTopicDescriptions(topicDescriptions);
+        } catch (ExecutionException | InterruptedException e) {
+            ObjectNode errorJson = objectMapper.createObjectNode();
+            errorJson.put("error", e.getMessage());
+            return errorJson;
+        }
+    }
+
     public static void migrateAllPatitionsFromTopic(String topicName, int brokerId, AdminClient adminClient) throws ExecutionException, InterruptedException {
         // Fetch the current topic partition information
         DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(Collections.singletonList(topicName));
@@ -50,23 +77,5 @@ public class KafkaTopicManager {
         DeleteTopicsResult result = adminClient.deleteTopics(topicsToDelete, options);
         result.all().get();
         System.out.println("Topics deleted: " + topicsToDelete);
-    }
-    
-    public static JsonNode describeAllTopics(AdminClient adminClient) {
-        try {
-            // List topics
-            ListTopicsResult listTopicsResult = adminClient.listTopics();
-            Collection<TopicListing> topics = listTopicsResult.listings().get();
-
-            // Describe topics to get metadata
-            DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(topics.stream().map(TopicListing::name).toList());
-            Map<String, TopicDescription> topicDescriptions = describeTopicsResult.all().get(); 
-            
-            return KafkaAdminClientUtils.formatTopicDescriptions(topicDescriptions);
-        } catch (ExecutionException | InterruptedException e) {
-            ObjectNode errorJson = objectMapper.createObjectNode();
-            errorJson.put("error", e.getMessage());
-            return errorJson;
-        }
     }
 }

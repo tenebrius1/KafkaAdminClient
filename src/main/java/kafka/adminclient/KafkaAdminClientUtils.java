@@ -8,12 +8,17 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartitionInfo;
 
+import java.lang.Exception;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class KafkaAdminClientUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static JsonNode formatTopicDescription() {
+      
+    }  
 
     public static JsonNode formatTopicDescriptions(Map<String, TopicDescription> topicDescriptions) {
         ObjectNode json = objectMapper.createObjectNode();
@@ -38,5 +43,9 @@ public class KafkaAdminClientUtils {
         }
 
         return json;
+    }
+
+    public static JsonNode wrapError(Exception e) {
+        
     }
 }
