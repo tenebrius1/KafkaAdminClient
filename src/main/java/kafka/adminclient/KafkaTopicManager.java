@@ -65,11 +65,15 @@ public class KafkaTopicManager {
         System.out.println("Reassignment completed for topic: " + topicName);
     }
     
-    public static void addTopic(String topicName, 
-                        int partitions, short replicationFactor, AdminClient adminClient) throws ExecutionException, InterruptedException {
-        NewTopic newTopic = new NewTopic(topicName, partitions, replicationFactor);
-        adminClient.createTopics(Collections.singleton(newTopic)).all().get();
-        System.out.println(topicName + " created!");
+    public static JsonNode createTopic(String topicName, 
+                        int partitions, short replicationFactor, AdminClient adminClient) {
+        try {
+            NewTopic newTopic = new NewTopic(topicName, partitions, replicationFactor);
+            adminClient.createTopics(Collections.singleton(newTopic)).all().get();
+            return null;
+        } catch (ExecutionException | InterruptedException e) {
+            return KafkaAdminClientUtils.wrapError(e);
+        }
     }
     
     public static void deleteTopics(List<String> topicsToDelete, AdminClient adminClient) throws ExecutionException, InterruptedException {

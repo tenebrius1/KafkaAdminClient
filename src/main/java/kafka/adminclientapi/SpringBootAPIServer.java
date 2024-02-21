@@ -48,4 +48,16 @@ class TopicController {
     public JsonNode DescribeTopic(@PathVariable("topicName") String topicName) {
         return KafkaTopicManager.describeTopic(KafkaConfig.getAdminClient(), topicName);
     }
+
+    @PostMapping("/create")
+    public JsonNode CreateTopic(@RequestBody JsonNode payload) {
+        String topicName = payload.get("topicName").asText();
+        int numPartitions = payload.get("numPartitions").asInt();
+        short replicationFactor = (short) payload.get("replicationFactor").asInt();
+        JsonNode res = KafkaTopicManager.createTopic(topicName, numPartitions, replicationFactor, KafkaConfig.getAdminClient());
+        if (res != null) {
+            return res;
+        }
+        return DescribeTopic(topicName);
+    }
 }
