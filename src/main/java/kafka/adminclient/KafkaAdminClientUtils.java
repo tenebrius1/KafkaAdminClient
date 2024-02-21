@@ -16,9 +16,22 @@ import java.util.stream.Collectors;
 public class KafkaAdminClientUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static JsonNode formatTopicDescription() {
-      
-    }  
+    public static ObjectNode formatTopicDescription(TopicDescription topicDescription, String topicName) {
+        ObjectNode topicJson = objectMapper.createObjectNode();
+        topicJson.put("name", topicName);
+        topicJson.put("internal", topicDescription.isInternal());
+
+        ArrayNode partitionsArray = topicJson.putArray("partitions");
+        for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
+            ObjectNode partitionJson = partitionsArray.addObject();
+            partitionJson.put("partition", partitionInfo.partition());
+            partitionJson.put("leader", partitionInfo.leader().id());
+            partitionJson.putPOJO("replicas", partitionInfo.replicas().stream().map(Node::id).collect(Collectors.toList()));
+            partitionJson.putPOJO("isr", partitionInfo.isr().stream().map(Node::id).collect(Collectors.toList()));
+        }
+
+        return topicJson;
+    }
 
     public static JsonNode formatTopicDescriptions(Map<String, TopicDescription> topicDescriptions) {
         ObjectNode json = objectMapper.createObjectNode();
@@ -27,25 +40,17 @@ public class KafkaAdminClientUtils {
         for (Map.Entry<String, TopicDescription> entry : topicDescriptions.entrySet()) {
             String topicName = entry.getKey();
             TopicDescription topicDescription = entry.getValue();
-
-            ObjectNode topicJson = topicsArray.addObject();
-            topicJson.put("name", topicName);
-            topicJson.put("internal", topicDescription.isInternal());
-
-            ArrayNode partitionsArray = topicJson.putArray("partitions");
-            for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
-                ObjectNode partitionJson = partitionsArray.addObject();
-                partitionJson.put("partition", partitionInfo.partition());
-                partitionJson.put("leader", partitionInfo.leader().id());
-                partitionJson.putPOJO("replicas", partitionInfo.replicas().stream().map(Node::id).collect(Collectors.toList()));
-                partitionJson.putPOJO("isr", partitionInfo.isr().stream().map(Node::id).collect(Collectors.toList()));
-            }
+            
+            ObjectNode topicJson = formatTopicDescription(topicDescription, topicName);
+            topicsArray.add(topicJson);
         }
 
         return json;
     }
 
     public static JsonNode wrapError(Exception e) {
-        
+        ObjectNode errorJson = objectMapper.createObjectNode();
+        errorJson.put("error", e.getMessage());
+        return errorJson;
     }
 }

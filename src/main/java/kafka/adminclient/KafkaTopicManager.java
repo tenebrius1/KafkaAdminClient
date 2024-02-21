@@ -21,8 +21,10 @@ public class KafkaTopicManager {
         try {
             DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
             TopicDescription topicDescription = result.values().get(topicName).get();
+
+            return KafkaAdminClientUtils.formatTopicDescription(topicDescription, topicName);
         } catch (ExecutionException | InterruptedException e) {
-            
+            return KafkaAdminClientUtils.wrapError(e);
         }
     }
 
@@ -38,9 +40,7 @@ public class KafkaTopicManager {
             
             return KafkaAdminClientUtils.formatTopicDescriptions(topicDescriptions);
         } catch (ExecutionException | InterruptedException e) {
-            ObjectNode errorJson = objectMapper.createObjectNode();
-            errorJson.put("error", e.getMessage());
-            return errorJson;
+            return KafkaAdminClientUtils.wrapError(e);
         }
     }
 
