@@ -23,3 +23,9 @@ targetCompatibility = JavaVersion.VERSION_17
 application {
     mainClass.set('kafka.adminclientapi.SpringBootAPIServer')
 }
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += '-Xlint:deprecation'
+    }
+}

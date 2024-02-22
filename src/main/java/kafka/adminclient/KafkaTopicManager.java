@@ -9,18 +9,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import kafka.adminclient.KafkaAdminClientUtils;
 
 public class KafkaTopicManager {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
     public static JsonNode describeTopic(AdminClient adminClient, String topicName) {
         try {
             DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
-            TopicDescription topicDescription = result.values().get(topicName).get();
+            TopicDescription topicDescription = result.topicNameValues().get(topicName).get();
 
             return KafkaAdminClientUtils.formatTopicDescription(topicDescription, topicName);
         } catch (ExecutionException | InterruptedException e) {
@@ -36,7 +33,7 @@ public class KafkaTopicManager {
 
             // Describe topics to get metadata
             DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(topics.stream().map(TopicListing::name).toList());
-            Map<String, TopicDescription> topicDescriptions = describeTopicsResult.all().get(); 
+            Map<String, TopicDescription> topicDescriptions = describeTopicsResult.allTopicNames().get(); 
             
             return KafkaAdminClientUtils.formatTopicDescriptions(topicDescriptions);
         } catch (ExecutionException | InterruptedException e) {
@@ -47,7 +44,7 @@ public class KafkaTopicManager {
     public static void migrateAllPatitionsFromTopic(String topicName, int brokerId, AdminClient adminClient) throws ExecutionException, InterruptedException {
         // Fetch the current topic partition information
         DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(Collections.singletonList(topicName));
-        Map<String, TopicDescription> topicDescriptions = describeTopicsResult.all().get();
+        Map<String, TopicDescription> topicDescriptions = describeTopicsResult.allTopicNames().get();
         TopicDescription topicDescription = topicDescriptions.get(topicName);
 
         // Create a reassignment map for all partitions to the new broker
@@ -76,10 +73,14 @@ public class KafkaTopicManager {
         }
     }
     
-    public static void deleteTopics(List<String> topicsToDelete, AdminClient adminClient) throws ExecutionException, InterruptedException {
-        DeleteTopicsOptions options = new DeleteTopicsOptions();
-        DeleteTopicsResult result = adminClient.deleteTopics(topicsToDelete, options);
-        result.all().get();
-        System.out.println("Topics deleted: " + topicsToDelete);
+    public static JsonNode deleteTopics(List<String> topicsToDelete, AdminClient adminClient) {
+        try {
+            DeleteTopicsOptions options = new DeleteTopicsOptions();
+            DeleteTopicsResult result = adminClient.deleteTopics(topicsToDelete, options);
+            result.all().get();
+            return null;
+        } catch (ExecutionException | InterruptedException e) {
+            return KafkaAdminClientUtils.wrapError(e);
+        }
     }
 }
