@@ -1,12 +1,12 @@
 package kafka.adminclientapi;
 
-import org.springframework.context.annotation.Configuration;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class KafkaConfig {

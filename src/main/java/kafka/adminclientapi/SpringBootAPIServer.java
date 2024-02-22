@@ -1,18 +1,21 @@
 package kafka.adminclientapi;
 
-import java.util.*;
+import java.util.List;
+import java.util.Arrays;
 import java.util.stream.Collectors;
-
-import kafka.adminclient.KafkaTopicManager; 
-import kafka.adminclientapi.KafkaConfig;
-
-import org.apache.kafka.clients.admin.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.TopicDescription;
+import org.apache.kafka.clients.admin.TopicListing;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.boot.SpringApplication;
@@ -24,6 +27,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
+
+import kafka.adminclient.KafkaTopicManager; 
+import kafka.adminclientapi.KafkaConfig;
 
 @SpringBootApplication(exclude = {R2dbcAutoConfiguration.class})
 public class SpringBootAPIServer {

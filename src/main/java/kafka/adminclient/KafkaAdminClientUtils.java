@@ -1,5 +1,10 @@
 package kafka.adminclient;
 
+import java.lang.Exception;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,18 +13,12 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartitionInfo;
 
-import java.lang.Exception;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class KafkaAdminClientUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static ObjectNode formatTopicDescription(TopicDescription topicDescription, String topicName) {
         ObjectNode topicJson = objectMapper.createObjectNode();
         topicJson.put("name", topicName);
-        topicJson.put("internal", topicDescription.isInternal());
 
         ArrayNode partitionsArray = topicJson.putArray("partitions");
         for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {

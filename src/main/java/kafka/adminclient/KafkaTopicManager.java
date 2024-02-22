@@ -1,19 +1,40 @@
 package kafka.adminclient;
 
-import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.TopicPartitionInfo;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AlterPartitionReassignmentsResult;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.DeleteTopicsOptions;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.NewPartitionReassignment;
+import org.apache.kafka.clients.admin.TopicDescription;
+import org.apache.kafka.clients.admin.TopicListing;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.TopicPartitionInfo;
 
 import kafka.adminclient.KafkaAdminClientUtils;
 
 public class KafkaTopicManager {
+    /**
+     * Retrieves the description of a Kafka topic as a JSON node.
+     * Information returned includes the topic name, partitions, leader, replicas, and ISRs.
+     *
+     * @param adminClient the Kafka AdminClient instance
+     * @param topicName   the name of the topic to describe
+     * @return the description of the topic as a JSON node
+     */
     public static JsonNode describeTopic(AdminClient adminClient, String topicName) {
         try {
             DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
@@ -25,7 +46,14 @@ public class KafkaTopicManager {
         }
     }
 
-    public static JsonNode describeAllTopics(AdminClient adminClient) {
+    /**
+     * Retrieves the metadata of all topics in the Kafka cluster and returns it as a JSON node.
+     * Information returned for each topic is the same as that returned by the describeTopic method.
+     *
+     * @param adminClient the Kafka AdminClient instance.
+     * @return a JSON node containing the metadata of all topics.
+     */
+    public static JsonNode describeAllTopics(org.apache.kafka.clients.admin.AdminClient adminClient) {
         try {
             // List topics
             ListTopicsResult listTopicsResult = adminClient.listTopics();
@@ -62,6 +90,15 @@ public class KafkaTopicManager {
         System.out.println("Reassignment completed for topic: " + topicName);
     }
     
+    /**
+     * Creates a new topic with the specified name, number of partitions, and replication factor.
+     * 
+     * @param topicName         the name of the topic to create.
+     * @param partitions        the number of partitions for the topic.
+     * @param replicationFactor the replication factor for the topic.
+     * @param adminClient       the AdminClient instance.
+     * @return null if the topic was successfully created, or a JsonNode object containing the error message.
+     */
     public static JsonNode createTopic(String topicName, 
                         int partitions, short replicationFactor, AdminClient adminClient) {
         try {
@@ -73,6 +110,13 @@ public class KafkaTopicManager {
         }
     }
     
+    /**
+     * Deletes the specified topics from the Kafka cluster.
+     * 
+     * @param topicsToDelete the list of topics to delete
+     * @param adminClient    the Kafka AdminClient instance
+     * @return null if the topics were successfully deleted, or a JsonNode object containing the error message.
+     */
     public static JsonNode deleteTopics(List<String> topicsToDelete, AdminClient adminClient) {
         try {
             DeleteTopicsOptions options = new DeleteTopicsOptions();
