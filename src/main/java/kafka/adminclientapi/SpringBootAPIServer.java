@@ -95,4 +95,18 @@ class TopicController {
                 ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
                 : new ResponseEntity<>(successNode, HttpStatus.OK);
     }
+
+    @PostMapping("/reassignAll")
+    public ResponseEntity<JsonNode> ReassignAllPartitions(@RequestBody JsonNode payload) {
+        int brokerId = payload.get("brokerId").asInt();
+        String topicName = payload.get("topicName").asText();
+        JsonNode res = KafkaTopicManager.migrateAllPatitionsFromTopicToBroker(topicName, brokerId, KafkaConfig.getAdminClient());
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode successNode = mapper.createObjectNode();
+        successNode.put("message", String.format("Successfully reassigned all partitions of topic %s to broker %d", topicName, brokerId));
+        return res != null 
+                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
+                : new ResponseEntity<>(successNode, HttpStatus.OK);
+    }
 }
