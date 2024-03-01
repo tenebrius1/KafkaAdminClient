@@ -2,12 +2,14 @@ package kafka.adminclientapi;
 
 import java.util.List;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
@@ -105,6 +107,20 @@ class TopicController {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode successNode = mapper.createObjectNode();
         successNode.put("message", String.format("Successfully reassigned all partitions of topic %s to broker %d", topicName, brokerId));
+        return res != null 
+                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
+                : new ResponseEntity<>(successNode, HttpStatus.OK);
+    }
+
+    @PostMapping("/reassign")
+    public ResponseEntity<JsonNode> ReassignPartitions(@RequestBody JsonNode payload) {
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap<String, Object> map = mapper.convertValue(payload, new TypeReference<HashMap<String, Object>>(){});
+        JsonNode res = KafkaTopicManager.migratePartitions(map, KafkaConfig.getAdminClient());
+
+        mapper = new ObjectMapper();
+        ObjectNode successNode = mapper.createObjectNode();
+        successNode.put("message", "Successfully reassigned partitions");
         return res != null 
                 ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
                 : new ResponseEntity<>(successNode, HttpStatus.OK);

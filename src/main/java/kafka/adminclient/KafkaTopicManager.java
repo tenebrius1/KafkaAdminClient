@@ -103,6 +103,31 @@ public class KafkaTopicManager {
             return KafkaAdminClientUtils.wrapError(e);
         }
     }
+
+    public static JsonNode migratePartitions(HashMap<String, Object> map, AdminClient adminClient) {
+        // sample hashmap "partitions":[{"topic":"quickstart-events","partition":0,"replicas":[1]}]}
+        try {
+            for (Map<String, Object> partition : (List<Map<String, Object>>) map.get("partitions")) {
+                String topicName = (String) partition.get("topic");
+                int partitionNumber = (int) partition.get("partition");
+                List<Integer> replicas = (List<Integer>) partition.get("replicas");
+
+                // Create a reassignment map for the partition
+                Map<TopicPartition, Optional<NewPartitionReassignment>> reassignmentMap = new HashMap<>();
+                reassignmentMap.put(
+                    new TopicPartition(topicName, partitionNumber),
+                    Optional.of(new NewPartitionReassignment(replicas))
+                );
+
+                // Execute the reassignment
+                AlterPartitionReassignmentsResult result = adminClient.alterPartitionReassignments(reassignmentMap);
+                result.all().get(); // Wait for the reassignment to complete
+            }
+            return null;
+        } catch (ExecutionException | InterruptedException e) {
+            return KafkaAdminClientUtils.wrapError(e);
+        }
+    }
     
     /**
      * Creates a new topic with the specified name, number of partitions, and replication factor.
