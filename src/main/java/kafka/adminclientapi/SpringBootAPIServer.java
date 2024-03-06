@@ -55,6 +55,47 @@ class KafkaAdminClientSetupController {
 }
 
 @RestController
+@RequestMapping("/cluster")
+class ClusterController {
+    @GetMapping("/describe")
+    public JsonNode DescribeCluster() {
+        return KafkaTopicManager.describeCluster(KafkaConfig.getAdminClient());
+    }
+}
+
+@RestController
+@RequestMapping("/partition")
+class PartitionController {
+    @PostMapping("/reassignAll")
+    public ResponseEntity<JsonNode> ReassignAllPartitions(@RequestBody JsonNode payload) {
+        int brokerId = payload.get("brokerId").asInt();
+        String topicName = payload.get("topicName").asText();
+        JsonNode res = KafkaTopicManager.migrateAllPatitionsFromTopicToBroker(topicName, brokerId, KafkaConfig.getAdminClient());
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode successNode = mapper.createObjectNode();
+        successNode.put("message", String.format("Successfully reassigned all partitions of topic %s to broker %d", topicName, brokerId));
+        return res != null 
+                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
+                : new ResponseEntity<>(successNode, HttpStatus.OK);
+    }
+
+    @PostMapping("/reassign")
+    public ResponseEntity<JsonNode> ReassignPartitions(@RequestBody JsonNode payload) {
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap<String, Object> map = mapper.convertValue(payload, new TypeReference<HashMap<String, Object>>(){});
+        JsonNode res = KafkaTopicManager.migratePartitions(map, KafkaConfig.getAdminClient());
+
+        mapper = new ObjectMapper();
+        ObjectNode successNode = mapper.createObjectNode();
+        successNode.put("message", "Successfully reassigned partitions");
+        return res != null 
+                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
+                : new ResponseEntity<>(successNode, HttpStatus.OK);
+    }
+}
+
+@RestController
 @RequestMapping("/topic")
 class TopicController {
     @GetMapping("/describeall")
@@ -93,34 +134,6 @@ class TopicController {
         ArrayNode deletedTopicsNode = successNode.putArray("deletedTopics");
         topicNamesList.forEach(deletedTopicsNode::add);
 
-        return res != null 
-                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
-                : new ResponseEntity<>(successNode, HttpStatus.OK);
-    }
-
-    @PostMapping("/reassignAll")
-    public ResponseEntity<JsonNode> ReassignAllPartitions(@RequestBody JsonNode payload) {
-        int brokerId = payload.get("brokerId").asInt();
-        String topicName = payload.get("topicName").asText();
-        JsonNode res = KafkaTopicManager.migrateAllPatitionsFromTopicToBroker(topicName, brokerId, KafkaConfig.getAdminClient());
-
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode successNode = mapper.createObjectNode();
-        successNode.put("message", String.format("Successfully reassigned all partitions of topic %s to broker %d", topicName, brokerId));
-        return res != null 
-                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
-                : new ResponseEntity<>(successNode, HttpStatus.OK);
-    }
-
-    @PostMapping("/reassign")
-    public ResponseEntity<JsonNode> ReassignPartitions(@RequestBody JsonNode payload) {
-        ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.convertValue(payload, new TypeReference<HashMap<String, Object>>(){});
-        JsonNode res = KafkaTopicManager.migratePartitions(map, KafkaConfig.getAdminClient());
-
-        mapper = new ObjectMapper();
-        ObjectNode successNode = mapper.createObjectNode();
-        successNode.put("message", "Successfully reassigned partitions");
         return res != null 
                 ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
                 : new ResponseEntity<>(successNode, HttpStatus.OK);

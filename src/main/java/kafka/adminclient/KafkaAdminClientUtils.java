@@ -1,9 +1,11 @@
 package kafka.adminclient;
 
 import java.lang.Exception;
+import java.lang.InterruptedException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +14,34 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.apache.kafka.clients.admin.DescribeClusterResult;
 
 public class KafkaAdminClientUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static JsonNode formatClusterDescription(DescribeClusterResult clusterResult) throws ExecutionException, InterruptedException {
+        ObjectNode rootNode = objectMapper.createObjectNode();
+
+        // Cluster ID
+        rootNode.put("clusterId", clusterResult.clusterId().get());
+
+        // Node Information (Broker Details)
+        ArrayNode brokersNode = rootNode.putArray("brokers");
+        for (Node node : clusterResult.nodes().get()) {
+            ObjectNode brokerNode = objectMapper.createObjectNode();
+            brokerNode.put("brokerId", node.id());
+            brokerNode.put("host", node.host());
+            brokerNode.put("port", node.port());
+            brokersNode.add(brokerNode);
+        }
+
+        Node controller = clusterResult.controller().get();
+        rootNode.putObject("controller")
+                .put("id", controller.id())
+                .put("host", controller.host())
+                .put("port", controller.port());
+        return rootNode;
+    }
 
     public static ObjectNode formatTopicDescription(TopicDescription topicDescription, String topicName) {
         ObjectNode topicJson = objectMapper.createObjectNode();

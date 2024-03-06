@@ -1,5 +1,6 @@
 package kafka.adminclient;
 
+import java.lang.InterruptedException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.apache.kafka.clients.admin.AlterPartitionReassignmentsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsOptions;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.DescribeClusterResult;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.NewPartitionReassignment;
@@ -27,6 +29,23 @@ import org.apache.kafka.common.TopicPartitionInfo;
 import kafka.adminclient.KafkaAdminClientUtils;
 
 public class KafkaTopicManager {
+    /**
+     * Retrieves the cluster description as a JSON node.
+     * Information included are the brokers and controllers running
+     * along with their ID and ports.
+     *
+     * @param adminClient the Kafka admin client
+     * @return the cluster description as a JSON node
+     */
+    public static JsonNode describeCluster(AdminClient adminClient) {
+        try {
+            DescribeClusterResult clusterResult = adminClient.describeCluster();
+            return KafkaAdminClientUtils.formatClusterDescription(clusterResult);
+        } catch (ExecutionException | InterruptedException e) {
+            return KafkaAdminClientUtils.wrapError(e);
+        }
+    }
+
     /**
      * Retrieves the description of a Kafka topic as a JSON node.
      * Information returned includes the topic name, partitions, leader, replicas, and ISRs.
@@ -64,66 +83,6 @@ public class KafkaTopicManager {
             Map<String, TopicDescription> topicDescriptions = describeTopicsResult.allTopicNames().get(); 
             
             return KafkaAdminClientUtils.formatTopicDescriptions(topicDescriptions);
-        } catch (ExecutionException | InterruptedException e) {
-            return KafkaAdminClientUtils.wrapError(e);
-        }
-    }
-
-    /**
-     * Migrates all partitions from a topic to a new broker and returns the result as a JsonNode.
-     * Run this script before decommissioning a broker to ensure that all partitions are migrated to other brokers.
-     * Note that this may cause partitions to have a lower replica count than the replication factor.
-     *
-     * @param topicName   the name of the topic to migrate partitions from
-     * @param brokerId    the ID of the new broker to migrate partitions to
-     * @param adminClient the AdminClient instance used to perform the migration
-     * @return a JsonNode representing the result of the migration
-     */
-    public static JsonNode migrateAllPatitionsFromTopicToBroker(String topicName, int brokerId, AdminClient adminClient) {
-        try {
-            // Fetch the current topic partition information
-            DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(Collections.singletonList(topicName));
-            Map<String, TopicDescription> topicDescriptions = describeTopicsResult.allTopicNames().get();
-            TopicDescription topicDescription = topicDescriptions.get(topicName);
-
-            // Create a reassignment map for all partitions to the new broker
-            Map<TopicPartition, Optional<NewPartitionReassignment>> reassignmentMap = new HashMap<>();
-            for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
-                reassignmentMap.put(
-                    new TopicPartition(topicName, partitionInfo.partition()),
-                    Optional.of(new NewPartitionReassignment(Collections.singletonList(brokerId)))
-                );
-            }
-
-            // Execute the reassignment
-            AlterPartitionReassignmentsResult result = adminClient.alterPartitionReassignments(reassignmentMap);
-            result.all().get(); // Wait for the reassignment to complete
-            return null;
-        } catch (ExecutionException | InterruptedException e) {
-            return KafkaAdminClientUtils.wrapError(e);
-        }
-    }
-
-    public static JsonNode migratePartitions(HashMap<String, Object> map, AdminClient adminClient) {
-        // sample hashmap "partitions":[{"topic":"quickstart-events","partition":0,"replicas":[1]}]}
-        try {
-            for (Map<String, Object> partition : (List<Map<String, Object>>) map.get("partitions")) {
-                String topicName = (String) partition.get("topic");
-                int partitionNumber = (int) partition.get("partition");
-                List<Integer> replicas = (List<Integer>) partition.get("replicas");
-
-                // Create a reassignment map for the partition
-                Map<TopicPartition, Optional<NewPartitionReassignment>> reassignmentMap = new HashMap<>();
-                reassignmentMap.put(
-                    new TopicPartition(topicName, partitionNumber),
-                    Optional.of(new NewPartitionReassignment(replicas))
-                );
-
-                // Execute the reassignment
-                AlterPartitionReassignmentsResult result = adminClient.alterPartitionReassignments(reassignmentMap);
-                result.all().get(); // Wait for the reassignment to complete
-            }
-            return null;
         } catch (ExecutionException | InterruptedException e) {
             return KafkaAdminClientUtils.wrapError(e);
         }
