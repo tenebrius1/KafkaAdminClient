@@ -1,5 +1,13 @@
 package kafka.adminclient;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.TopicPartitionInfo;
+
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+
 public class KafkaPartitionManager {
     /**
      * Migrates partitions of Kafka topics based on the provided map.

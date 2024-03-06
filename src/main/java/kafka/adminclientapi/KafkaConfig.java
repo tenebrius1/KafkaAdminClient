@@ -19,6 +19,7 @@ public class KafkaConfig {
     public static void bootstrapAdminClient(String bootstrapServers) throws Exception {
         try {
             Properties props = new Properties();
+            System.out.println("Bootstrap servers: " + bootstrapServers);
             props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             AdminClient adminClient = AdminClient.create(props);
 

@@ -2,7 +2,6 @@ package kafka.adminclient;
 
 import java.lang.Exception;
 import java.lang.InterruptedException;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.concurrent.ExecutionException;

@@ -10,14 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
-import org.apache.kafka.clients.admin.DeleteTopicsResult;
-import org.apache.kafka.clients.admin.DescribeTopicsResult;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.admin.TopicDescription;
-import org.apache.kafka.clients.admin.TopicListing;
+import kafka.adminclient.KafkaPartitionManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.boot.SpringApplication;
@@ -31,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 
 import kafka.adminclient.KafkaTopicManager; 
-import kafka.adminclientapi.KafkaConfig;
 
 @SpringBootApplication(exclude = {R2dbcAutoConfiguration.class})
 public class SpringBootAPIServer {
@@ -70,7 +62,7 @@ class PartitionController {
     public ResponseEntity<JsonNode> ReassignAllPartitions(@RequestBody JsonNode payload) {
         int brokerId = payload.get("brokerId").asInt();
         String topicName = payload.get("topicName").asText();
-        JsonNode res = KafkaTopicManager.migrateAllPatitionsFromTopicToBroker(topicName, brokerId, KafkaConfig.getAdminClient());
+        JsonNode res = KafkaPartitionManager.migrateAllPatitionsFromTopicToBroker(topicName, brokerId, KafkaConfig.getAdminClient());
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode successNode = mapper.createObjectNode();
@@ -84,7 +76,7 @@ class PartitionController {
     public ResponseEntity<JsonNode> ReassignPartitions(@RequestBody JsonNode payload) {
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, Object> map = mapper.convertValue(payload, new TypeReference<HashMap<String, Object>>(){});
-        JsonNode res = KafkaTopicManager.migratePartitions(map, KafkaConfig.getAdminClient());
+        JsonNode res = KafkaPartitionManager.migratePartitions(map, KafkaConfig.getAdminClient());
 
         mapper = new ObjectMapper();
         ObjectNode successNode = mapper.createObjectNode();
