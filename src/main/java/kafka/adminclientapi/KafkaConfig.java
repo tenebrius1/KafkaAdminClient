@@ -24,7 +24,7 @@ public class KafkaConfig {
             AdminClient adminClient = AdminClient.create(props);
 
             // Check if broker is online
-            adminClient.listTopics().names().get(1, TimeUnit.SECONDS); 
+            adminClient.listTopics().names().get(2, TimeUnit.SECONDS);
             KafkaConfig.adminClient = adminClient;
         } catch (TimeoutException e) {
             throw new RuntimeException("Connection timed out: Kafka broker might be offline.");

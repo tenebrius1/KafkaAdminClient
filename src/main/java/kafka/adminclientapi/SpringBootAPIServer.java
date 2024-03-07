@@ -62,7 +62,7 @@ class PartitionController {
     public ResponseEntity<JsonNode> ReassignAllPartitions(@RequestBody JsonNode payload) {
         int brokerId = payload.get("brokerId").asInt();
         String topicName = payload.get("topicName").asText();
-        JsonNode res = KafkaPartitionManager.migrateAllPatitionsFromTopicToBroker(topicName, brokerId, KafkaConfig.getAdminClient());
+        JsonNode res = KafkaPartitionManager.migrateAllPartitionsFromTopicToBroker(topicName, brokerId, KafkaConfig.getAdminClient());
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode successNode = mapper.createObjectNode();
@@ -75,7 +75,7 @@ class PartitionController {
     @PostMapping("/reassign")
     public ResponseEntity<JsonNode> ReassignPartitions(@RequestBody JsonNode payload) {
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.convertValue(payload, new TypeReference<HashMap<String, Object>>(){});
+        HashMap<String, Object> map = mapper.convertValue(payload, new TypeReference<>() {});
         JsonNode res = KafkaPartitionManager.migratePartitions(map, KafkaConfig.getAdminClient());
 
         mapper = new ObjectMapper();
@@ -83,6 +83,21 @@ class PartitionController {
         successNode.put("message", "Successfully reassigned partitions");
         return res != null 
                 ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST) 
+                : new ResponseEntity<>(successNode, HttpStatus.OK);
+    }
+
+    @PostMapping("/electleader")
+    public ResponseEntity<JsonNode> ElectLeader(@RequestBody JsonNode payload) {
+        String topicName = payload.get("topicName").asText();
+        int partitionNumber = payload.get("partitionNumber").asInt();
+        int newLeaderId = payload.get("newLeaderId").asInt();
+        JsonNode res = KafkaPartitionManager.electNewLeader(KafkaConfig.getAdminClient(), topicName, partitionNumber, newLeaderId);
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode successNode = mapper.createObjectNode();
+        successNode.put("message", String.format("Successfully elected new leader %d for partition %d of topic %s", newLeaderId, partitionNumber, topicName));
+        return res != null
+                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST)
                 : new ResponseEntity<>(successNode, HttpStatus.OK);
     }
 }
