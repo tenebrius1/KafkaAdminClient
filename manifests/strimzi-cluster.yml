@@ -53,6 +53,9 @@ spec:
         port: 9094
         type: nodeport
         tls: false
+        configuration:
+          bootstrap:
+            nodePort: 31361
     config:
       offsets.topic.replication.factor: 3
       transaction.state.log.replication.factor: 3

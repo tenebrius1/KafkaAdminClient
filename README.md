@@ -28,7 +28,7 @@ Key Features
 - Java-17
 - Gradle-7.4.2
 - Docker
-- Kubernetes
+- KinD/minikube
 - Strimzi Kafka
 
 ### Build from source
