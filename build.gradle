@@ -15,6 +15,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.32'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.fabric8:kubernetes-client:6.10.0'
+    // https://mvnrepository.com/artifact/io.strimzi/api
+    implementation 'io.strimzi:api:0.40.0'
 }
 
 // Define the version of Java to use
