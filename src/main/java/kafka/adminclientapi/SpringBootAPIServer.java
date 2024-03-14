@@ -37,8 +37,8 @@ class KafkaAdminClientSetupController {
     @PostMapping("/bootstrap")
     public String SetupKafkaAdminClient(@RequestBody JsonNode payload) {
         String bootstrapServers = payload.get("boostrapServers").asText();
-        String namespace = payload.get("namespace").asText();
-        String clusterName = payload.get("clusterName").asText();
+        JsonNode namespace = payload.get("namespace");
+        JsonNode clusterName = payload.get("clusterName");
         try {
             KafkaConfig.bootstrapAdminClient(bootstrapServers);
             KafkaConfig.bootstrapKubernetesClient(namespace, clusterName);

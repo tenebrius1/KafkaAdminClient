@@ -4,6 +4,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -38,11 +39,11 @@ public class KafkaConfig {
         }
     }
 
-    public static void bootstrapKubernetesClient(String namespace, String clusterName) {
+    public static void bootstrapKubernetesClient(JsonNode namespace, JsonNode clusterName) {
         try {
             KubernetesClient client = new KubernetesClientBuilder().build();
-            String namespaceToUse = namespace == null ? "kafka" : namespace;
-            String clusterNameToUse = clusterName == null ? "my-cluster" : clusterName;
+            String namespaceToUse = namespace == null ? "kafka" : namespace.asText();
+            String clusterNameToUse = clusterName == null ? "my-cluster" : clusterName.asText();
             KafkaConfig.namespace = namespaceToUse;
             KafkaConfig.clusterName = clusterNameToUse;
             KafkaConfig.kubernetesClient = client;
