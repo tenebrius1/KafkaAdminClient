@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.core.type.TypeReference;
+import kafka.adminclient.KafkaBrokerManager;
 import kafka.adminclient.KafkaPartitionManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,23 @@ class ClusterController {
     @GetMapping("/describe")
     public JsonNode DescribeCluster() {
         return KafkaTopicManager.describeCluster(KafkaConfig.getAdminClient());
+    }
+}
+
+@RestController
+@RequestMapping("/broker")
+class BrokerController {
+    @PostMapping("/scale")
+    public ResponseEntity<JsonNode> ScaleBrokers(@RequestBody JsonNode payload) {
+        int numBrokers = payload.get("numBrokers").asInt();
+        JsonNode res = KafkaBrokerManager.scaleBrokers(KafkaConfig.getKubernetesClient(), KafkaConfig.namespace, KafkaConfig.clusterName, numBrokers);
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode successNode = mapper.createObjectNode();
+        successNode.put("message", String.format("Successfully scaled the number of brokers to %d", numBrokers));
+        return res != null
+                ? new ResponseEntity<>(res, HttpStatus.BAD_REQUEST)
+                : new ResponseEntity<>(successNode, HttpStatus.OK);
     }
 }
 

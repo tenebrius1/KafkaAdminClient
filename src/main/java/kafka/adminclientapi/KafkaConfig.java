@@ -21,6 +21,9 @@ public class KafkaConfig {
     public static AdminClient getAdminClient() {
         return adminClient;
     }
+    public static KubernetesClient getKubernetesClient() {
+        return kubernetesClient;
+    }
 
     public static void bootstrapAdminClient(String bootstrapServers) throws Exception {
         try {
