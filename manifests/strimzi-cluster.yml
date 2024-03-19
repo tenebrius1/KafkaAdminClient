@@ -74,3 +74,63 @@ spec:
       type: ephemeral
   entityOperator:
     userOperator: {}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-client
+  template:
+    metadata:
+      labels:
+        app: admin-client
+    spec:
+      containers:
+        - name: admin-client
+          image: tanyg4/admin-client:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-client-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: admin-client
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: strimzi-kafkanodepools-access
+rules:
+- apiGroups: ["kafka.strimzi.io"]
+  resources: ["kafkanodepools"]
+  verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: strimzi-kafkanodepools-access-binding
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: kafka
+roleRef:
+  kind: ClusterRole
+  name: strimzi-kafkanodepools-access
+  apiGroup: rbac.authorization.k8s.io
+
