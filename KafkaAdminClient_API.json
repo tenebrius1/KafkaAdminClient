@@ -1,0 +1,379 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2024-04-06T12:51:57.600Z",
+  "__export_source": "insomnia.desktop.app:v0.2.3-a",
+  "resources": [
+    {
+      "_id": "req_bb4a266317c5445582e4ac4b325b7754",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1711091984960,
+      "created": 1708396024435,
+      "url": "{{ _.baseURL }}/bootstrap",
+      "name": "Init AdminClient",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"boostrapServers\": \"my-cluster-kafka-bootstrap:9092\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708396024435,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "parentId": null,
+      "modified": 1708347173939,
+      "created": 1708347137436,
+      "name": "AdminClientAPI",
+      "description": "",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "req_73d087f8d92348c191bd0a7efce29d3d",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1709712150016,
+      "created": 1709712095362,
+      "url": "{{ _.baseURL }}/cluster/describe",
+      "name": "Describe cluster",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708383801934.75,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_d6afdb17804846708c76351fb65447e0",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1710781499070,
+      "created": 1708518918131,
+      "url": "{{ _.baseURL }}/topic/describe/test-topic1",
+      "name": "Describe Specific Topic",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708371579434.5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_2e114563b0fe4b2d8541bc1617e427d8",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1708572875910,
+      "created": 1708347134435,
+      "url": "{{ _.baseURL }}/topic/describeall",
+      "name": "Describe All Topics",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708347134434,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_71fc15ee75b84369a9d2fb720fe887a0",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1710332587144,
+      "created": 1708530222780,
+      "url": "{{ _.baseURL }}/topic/create",
+      "name": "Create Topic",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"topicName\": \"test-topic1\",\n\t\"numPartitions\": 2,\n\t\"replicationFactor\": 2\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708347134334,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_6bd71b7bd5674311b2e0c46e3984f398",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1709803376384,
+      "created": 1708572469308,
+      "url": "{{ _.baseURL }}/topic/delete",
+      "name": "Delete Topics",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"topicNames\": \"test-topic2\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708347134234,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_8abb225a81d44f83ac26f0c44d557ebf",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1709719474117,
+      "created": 1709228905361,
+      "url": "{{ _.baseURL }}/partition/reassignAll",
+      "name": "Migrate Partitions All",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"brokerId\": \"1\",\n\t\"topicName\": \"test-topic2\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708347134134,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_87456aac37e84ed2a7a740672e1b9faa",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1711789974209,
+      "created": 1709281874276,
+      "url": "{{ _.baseURL }}/partition/reassign",
+      "name": "Migrate Partitions Custom",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"partitions\": [\n    {\n      \"topic\": \"test-topic2\",\n      \"partition\": 0,\n      \"replicas\": [\n        1,\n        2\n      ]\n    },\n    {\n      \"topic\": \"test-topic2\",\n      \"partition\": 1,\n      \"replicas\": [\n        2,\n        1\n      ]\n    },\n    {\n      \"topic\": \"test-topic2\",\n      \"partition\": 2,\n      \"replicas\": [\n        3\n      ]\n    }\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708347134034,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_b3ab10dbbb4d414ca7c80e71d47d9b7e",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1710781509101,
+      "created": 1709800757840,
+      "url": "{{ _.baseURL }}/partition/electleader",
+      "name": "Elect New Leader",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"topicName\": \"test-topic1\",\n\t\"partitionNumber\": 0,\n\t\"newLeaderId\": 2\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708347134009,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_64e1e41c3085401bafff90d37fa50c1e",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1712293416409,
+      "created": 1710397067125,
+      "url": "{{ _.baseURL }}/broker/scale",
+      "name": "Scale Brokers",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"numBrokers\": 3\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "User-Agent",
+          "value": "insomnium/0.2.3-a"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708347133996.5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "segmentParams": [],
+      "_type": "request"
+    },
+    {
+      "_id": "env_8a9cbc1eb13f4dcaa9bc2313aa2e443d",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1708347136435,
+      "created": 1708347136435,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1708347136435,
+      "_type": "environment"
+    },
+    {
+      "_id": "jar_0ea96bac9b894177ad60e0b5a8c6afde",
+      "parentId": "wrk_ef5e9299c265460e8ce2aa0f540a6b47",
+      "modified": 1708347137435,
+      "created": 1708347137435,
+      "name": "Default Jar",
+      "cookies": [],
+      "_type": "cookie_jar"
+    }
+  ]
+}

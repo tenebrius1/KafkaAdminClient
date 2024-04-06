@@ -14,6 +14,9 @@ Key Features
 
 - HTTP API: Interact with and modify Kafka cluster configurations using a well-defined API.
 - Extensibility: Designed as a modular component, allowing readily integrated into a cloud-native stream processing solution.
+- Dynamic Broker Management: Add, remove, and update Kafka brokers programmatically.
+- Dynamic Partition Reassignment: Rebalance Kafka partitions across brokers to optimize cluster performance.
+- Dynamic Topic Management: Create, delete, and update Kafka topics on-the-fly.
 
 ## Potential Use Cases
 
@@ -31,9 +34,18 @@ Key Features
 - KinD/minikube
 - Strimzi Kafka
 
-### Build from source
+### Deployment
 
 1. Fork and clone this repo using `git clone`
 2. Install the requirements as stated above. If you have conda installed, run `conda create --name <myenv> --file environment.yml`
-3. Run `gradle build && gradle run` which will start the Springboot API server
-4. By default, Springboot runs on `localhost:8080` which is how you will interact with the API server
+3. Run `start-strimzi.sh` to set up a Kubernetes namespace and deploy a Kafka cluster using Strimzi, configured to be operating in Kraft mode
+4. Wait for a few seconds for the Strimzi cluster to be configured and ready
+5. Run `kubectl apply -f manifests/strimzi-cluster.yml -n kafka` to spin up the controllers, brokers and ingress
+
+*Note that the steps above are for cloud deployment and will not work on local machines. For a managed Kubernetes platform, visit https://www.digitalocean.com/products/kubernetes.
+
+### API Sample Usage
+
+`KafkaAdminClient_API.json` contains a sample [Postman](https://www.postman.com/) collection that demonstrates how to interact with the KafkaAdminClient API.
+
+To use the collection, import it into Postman and update the environment variables to match your Kafka cluster configuration. The only environment variable that needs to be updated is `base_url`, which should be set to the base URL of the KafkaAdminClient API, i.e. IP address of LoadBalancer.
